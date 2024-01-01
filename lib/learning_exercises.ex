@@ -1335,7 +1335,7 @@ defmodule Learning do
     Construct all possible balanced binary trees with count nodes.
 
   ## Example
-  iex> Learning.construct_balanced_btree 4
+  iex> Learning.construct_balanced_btrees 4
   [
     %BinaryTree{
       node: "x",
@@ -1375,18 +1375,18 @@ defmodule Learning do
     }
   ]
   """
-  def construct_balanced_btree(count) do
+  def construct_balanced_btrees(count) do
     cond do
       count == 0 ->
         [nil]
 
       rem(count, 2) == 1 ->
-        t = construct_balanced_btree(trunc(count / 2))
+        t = construct_balanced_btrees(trunc(count / 2))
         add_trees_with(t, t)
 
       rem(count, 2) == 0 ->
-        t1 = construct_balanced_btree(trunc(count / 2) - 1)
-        t2 = construct_balanced_btree(trunc(count / 2))
+        t1 = construct_balanced_btrees(trunc(count / 2) - 1)
+        t2 = construct_balanced_btrees(trunc(count / 2))
         add_trees_with(t1, t2) ++ add_trees_with(t2, t1)
     end
   end
@@ -1437,7 +1437,30 @@ defmodule Learning do
   256
   """
   def sym_bal_btrees(n) do
-    construct_balanced_btree(n)
+    construct_balanced_btrees(n)
     |> Enum.filter(&BinaryTree.is_symmetric/1)
+  end
+
+  @doc """
+    Construct all height-balanced binary trees with height h
+
+  ## Example
+  iex(56)> Learning.construct_height_balanced_btrees(3) |> Enum.map(&BinaryTree.height/1)
+  [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+  """
+  def construct_height_balanced_btrees(h) do
+    cond do
+      h == 0 ->
+        [nil]
+
+      h == 1 ->
+        [%BinaryTree{node: "x", left: nil, right: nil}]
+
+      true ->
+        t1 = construct_height_balanced_btrees(h - 1)
+        t2 = construct_height_balanced_btrees(h - 2)
+
+        add_trees_with(t1, t1) ++ add_trees_with(t1, t2) ++ add_trees_with(t2, t1)
+    end
   end
 end

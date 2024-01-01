@@ -93,4 +93,32 @@ defmodule BinaryTree do
   def is_symmetric(tree) do
     is_mirror(tree.left, tree.right)
   end
+
+  @doc """
+    Find the height - the maximum count of edges to any leaf node - of a binary tree
+
+  ## Example
+  iex(2)> BinaryTree.height %BinaryTree{node: "x", left: nil, right: nil}
+  1
+
+  iex(3)> BinaryTree.height %BinaryTree{node: "x", left: %BinaryTree{node: "x", left: nil, right: nil}, right: nil}
+  2
+
+  iex(4)> BinaryTree.height %BinaryTree{node: "x", left: %BinaryTree{node: "x", left: nil, right: %BinaryTree{node: "x", left: nil, right: nil}}, right: nil}
+  3
+  """
+  def height(tree) do
+    case tree do
+      nil ->
+        1
+
+      %BinaryTree{node: _, left: l, right: r} ->
+        case {l, r} do
+          {nil, nil} -> 1
+          {l, nil} -> 1 + height(l)
+          {nil, r} -> 1 + height(r)
+          {l, r} -> 1 + max(height(l), height(r))
+        end
+    end
+  end
 end
