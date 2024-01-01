@@ -1471,4 +1471,28 @@ defmodule Learning do
         add_trees_with(t1, t1) ++ add_trees_with(t1, t2) ++ add_trees_with(t2, t1)
     end
   end
+
+  @doc """
+    Find and return the minimum number of nodes for a height-balanced binary
+    tree of the given height
+
+  ## Example
+  iex(70)> Learning.min_nodes 3
+  5
+  """
+  def min_nodes(0) do
+    # A tree with no children
+    1
+  end
+
+  def min_nodes(1) do
+    # A tree with one edge is still height-balanced
+    2
+  end
+
+  def min_nodes(h) when is_integer(h) do
+    # the nodes of the left and right children, this is always less than if
+    # both children have height h-1 so that case can be ignored
+    min_nodes(h - 1) + min_nodes(h - 2)
+  end
 end
