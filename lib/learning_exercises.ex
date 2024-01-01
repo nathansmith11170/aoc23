@@ -1445,16 +1445,24 @@ defmodule Learning do
     Construct all height-balanced binary trees with height h
 
   ## Example
-  iex(56)> Learning.construct_height_balanced_btrees(3) |> Enum.map(&BinaryTree.height/1)
-  [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+  iex(63)> Learning.construct_height_balanced_btrees(2) |> Enum.map(&BinaryTree.height/1)
+  [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
   """
   def construct_height_balanced_btrees(h) do
     cond do
       h == 0 ->
-        [nil]
+        [%BinaryTree{node: "x", left: nil, right: nil}]
 
       h == 1 ->
-        [%BinaryTree{node: "x", left: nil, right: nil}]
+        [
+          %BinaryTree{node: "x", left: %BinaryTree{node: "x", left: nil, right: nil}, right: nil},
+          %BinaryTree{node: "x", left: nil, right: %BinaryTree{node: "x", left: nil, right: nil}},
+          %BinaryTree{
+            node: "x",
+            left: %BinaryTree{node: "x", left: nil, right: nil},
+            right: %BinaryTree{node: "x", left: nil, right: nil}
+          }
+        ]
 
       true ->
         t1 = construct_height_balanced_btrees(h - 1)

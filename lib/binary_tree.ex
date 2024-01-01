@@ -99,22 +99,22 @@ defmodule BinaryTree do
 
   ## Example
   iex(2)> BinaryTree.height %BinaryTree{node: "x", left: nil, right: nil}
-  1
+  0
 
   iex(3)> BinaryTree.height %BinaryTree{node: "x", left: %BinaryTree{node: "x", left: nil, right: nil}, right: nil}
-  2
+  1
 
   iex(4)> BinaryTree.height %BinaryTree{node: "x", left: %BinaryTree{node: "x", left: nil, right: %BinaryTree{node: "x", left: nil, right: nil}}, right: nil}
-  3
+  2
   """
   def height(tree) do
     case tree do
       nil ->
-        1
+        0
 
       %BinaryTree{node: _, left: l, right: r} ->
         case {l, r} do
-          {nil, nil} -> 1
+          {nil, nil} -> 0
           {l, nil} -> 1 + height(l)
           {nil, r} -> 1 + height(r)
           {l, r} -> 1 + max(height(l), height(r))
