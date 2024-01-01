@@ -1495,4 +1495,61 @@ defmodule Learning do
     # both children have height h-1 so that case can be ignored
     min_nodes(h - 1) + min_nodes(h - 2)
   end
+
+  @doc """
+    Find and return the minumum height for a height-balanced binary tree with
+    the given number of nodes
+
+  ## Examples
+  iex(80)> Learning.min_height 1
+  0
+
+  iex(81)> Learning.min_height 2
+  1
+
+  iex(82)> Learning.min_height 3
+  1
+
+  iex(83)> Learning.min_height 4
+  2
+
+  iex(84)> Learning.min_height 5
+  2
+
+  iex(85)> Learning.min_height 6
+  2
+
+  iex(86)> Learning.min_height 7
+  2
+
+  iex(87)> Learning.min_height 8
+  3
+
+  iex(88)> Learning.min_height 9
+  3
+
+  iex(89)> Learning.min_height 10
+  3
+
+  iex(90)> Learning.min_height 11
+  3
+
+  iex(91)> Learning.min_height 12
+  3
+
+  iex(92)> Learning.min_height 13
+  3
+
+  iex(93)> Learning.min_height 14
+  3
+
+  iex(94)> Learning.min_height 15
+  3
+
+  iex(95)> Learning.min_height 16
+  4
+  """
+  def min_height(n) when is_integer(n) do
+    trunc(:math.log2(n))
+  end
 end
