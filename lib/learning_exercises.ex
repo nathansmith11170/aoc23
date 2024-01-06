@@ -915,26 +915,22 @@ defmodule Learning do
     first_factor(2, n)
   end
 
-  @spec construct_factors_tree(integer()) :: %BinaryTree{
-          node: integer(),
-          left: nil | %BinaryTree{},
-          right: nil | %BinaryTree{}
-        }
+  @spec construct_factors_tree(integer()) :: BinaryTree.tree()
   @doc """
     Construct a factors tree for integer n.
 
   ## Example
   iex> Learning.construct_factors_tree 315
   %BinaryTree{
-    node: 315,
-    left: %BinaryTree{node: 3, left: nil, right: nil},
+    val: 315,
+    left: %BinaryTree{val: 3, left: :empty, right: :empty},
     right: %BinaryTree{
-      node: 105,
-      left: %BinaryTree{node: 3, left: nil, right: nil},
+      val: 105,
+      left: %BinaryTree{val: 3, left: :empty, right: :empty},
       right: %BinaryTree{
-        node: 35,
-        left: %BinaryTree{node: 5, left: nil, right: nil},
-        right: %BinaryTree{node: 7, left: nil, right: nil}
+        val: 35,
+        left: %BinaryTree{val: 5, left: :empty, right: :empty},
+        right: %BinaryTree{val: 7, left: :empty, right: :empty}
       }
     }
   }
@@ -943,16 +939,16 @@ defmodule Learning do
     {factor_l, factor_r} = any_factors(n)
 
     %BinaryTree{
-      node: n,
+      val: n,
       left:
         if factor_l == 1 do
-          nil
+          :empty
         else
           construct_factors_tree(factor_l)
         end,
       right:
         if factor_r == n do
-          nil
+          :empty
         else
           construct_factors_tree(factor_r)
         end
@@ -1251,7 +1247,7 @@ defmodule Learning do
         [fst | rest] = queue_1
         [fst2 | rest2] = queue_2
 
-        if elem(fst.node, 1) <= elem(fst2.node, 1) do
+        if elem(fst.val, 1) <= elem(fst2.val, 1) do
           smallest_two(rest, queue_2, [fst | acc])
         else
           smallest_two(queue_1, rest2, [fst2 | acc])
@@ -1259,6 +1255,8 @@ defmodule Learning do
     end
   end
 
+  @spec construct_huffman_tree([BinaryTree.tree(), ...], [BinaryTree.tree(), ...] | []) ::
+          BinaryTree.tree()
   @doc """
     Constructs the huffman tree, given the initial priority queues of the alphabet
 
@@ -1276,7 +1274,7 @@ defmodule Learning do
         [[smallest, small], remaining_1, remaining_2] = smallest_two(queue_1, queue_2, [])
 
         new_node = %BinaryTree{
-          node: {"", elem(smallest.node, 1) + elem(small.node, 1)},
+          val: {"", elem(smallest.val, 1) + elem(small.val, 1)},
           left: smallest,
           right: small
         }
@@ -1288,49 +1286,52 @@ defmodule Learning do
     end
   end
 
+  @spec enumerate_huffman_code(BinaryTree.tree(), String.t()) :: [{any(), String.t()}, ...]
   @doc """
     Traverse the huffman tree, labeling the edges, and return the complete code
     for each leaf of the tree
   """
   def enumerate_huffman_code(tree, code) do
     cond do
-      tree.left == nil && tree.right == nil ->
-        [{elem(tree.node, 0), code}]
+      tree.left == :empty && tree.right == :empty ->
+        [{elem(tree.val, 0), code}]
 
       true ->
-        enumerate_huffman_code(tree.left, code <> "1") ++
-          enumerate_huffman_code(tree.right, code <> "0")
+        enumerate_huffman_code(tree.left, code <> "0") ++
+          enumerate_huffman_code(tree.right, code <> "1")
     end
   end
 
+  @spec huffman(list()) :: [{any(), binary()}, ...]
   @doc """
     Construct and return the huffman encoded alphabet.
 
   ## Example
   iex> Learning.huffman [{"a", 45}, {"b", 13}, {"c", 12}, {"d", 16}, {"e", 9}, {"f", 5}]
   [
-    {"d", "111"},
-    {"e", "1101"},
-    {"f", "1100"},
-    {"b", "101"},
-    {"c", "100"},
-    {"a", "0"}
+    {"d", "000"},
+    {"e", "0010"},
+    {"f", "0011"},
+    {"b", "010"},
+    {"c", "011"},
+    {"a", "1"}
   ]
   """
   def huffman(alphabet) when is_list(alphabet) do
     for(
       {symbol, weight} <- alphabet,
-      do: %BinaryTree{node: {symbol, weight}, left: nil, right: nil}
+      do: %BinaryTree{val: {symbol, weight}, left: :empty, right: :empty}
     )
-    |> Enum.sort(fn a, b -> elem(a.node, 1) <= elem(b.node, 1) end)
+    |> Enum.sort(fn a, b -> elem(a.val, 1) <= elem(b.val, 1) end)
     |> construct_huffman_tree([])
     |> enumerate_huffman_code("")
   end
 
   defp add_trees_with(left, right) do
-    for l <- left, r <- right, do: %BinaryTree{node: "x", left: l, right: r}
+    for l <- left, r <- right, do: %BinaryTree{val: "x", left: l, right: r}
   end
 
+  @spec construct_balanced_btrees(any()) :: list()
   @doc """
     Construct all possible balanced binary trees with count nodes.
 
@@ -1338,69 +1339,69 @@ defmodule Learning do
   iex> Learning.construct_balanced_btrees 4
   [
     %BinaryTree{
-      node: "x",
-      left: %BinaryTree{node: "x", left: nil, right: nil},
+      val: "x",
+      left: %BinaryTree{val: "x", left: :empty, right: :empty},
       right: %BinaryTree{
-        node: "x",
-        left: nil,
-        right: %BinaryTree{node: "x", left: nil, right: nil}
+        val: "x",
+        left: :empty,
+        right: %BinaryTree{val: "x", left: :empty, right: :empty}
       }
     },
     %BinaryTree{
-      node: "x",
-      left: %BinaryTree{node: "x", left: nil, right: nil},
+      val: "x",
+      left: %BinaryTree{val: "x", left: :empty, right: :empty},
       right: %BinaryTree{
-        node: "x",
-        left: %BinaryTree{node: "x", left: nil, right: nil},
-        right: nil
+        val: "x",
+        left: %BinaryTree{val: "x", left: :empty, right: :empty},
+        right: :empty
       }
     },
     %BinaryTree{
-      node: "x",
+      val: "x",
       left: %BinaryTree{
-        node: "x",
-        left: nil,
-        right: %BinaryTree{node: "x", left: nil, right: nil}
+        val: "x",
+        left: :empty,
+        right: %BinaryTree{val: "x", left: :empty, right: :empty}
       },
-      right: %BinaryTree{node: "x", left: nil, right: nil}
+      right: %BinaryTree{val: "x", left: :empty, right: :empty}
     },
     %BinaryTree{
-      node: "x",
+      val: "x",
       left: %BinaryTree{
-        node: "x",
-        left: %BinaryTree{node: "x", left: nil, right: nil},
-        right: nil
+        val: "x",
+        left: %BinaryTree{val: "x", left: :empty, right: :empty},
+        right: :empty
       },
-      right: %BinaryTree{node: "x", left: nil, right: nil}
+      right: %BinaryTree{val: "x", left: :empty, right: :empty}
     }
   ]
   """
-  def construct_balanced_btrees(count) do
+  def construct_balanced_btrees(n) do
     cond do
-      count == 0 ->
-        [nil]
+      n == 0 ->
+        [:empty]
 
-      rem(count, 2) == 1 ->
-        t = construct_balanced_btrees(trunc(count / 2))
+      rem(n, 2) == 1 ->
+        t = construct_balanced_btrees(trunc(n / 2))
         add_trees_with(t, t)
 
-      rem(count, 2) == 0 ->
-        t1 = construct_balanced_btrees(trunc(count / 2) - 1)
-        t2 = construct_balanced_btrees(trunc(count / 2))
+      rem(n, 2) == 0 ->
+        t1 = construct_balanced_btrees(trunc(n / 2) - 1)
+        t2 = construct_balanced_btrees(trunc(n / 2))
         add_trees_with(t1, t2) ++ add_trees_with(t2, t1)
     end
   end
 
   defp bst_insert(z, tree) do
     case tree do
-      nil ->
-        %BinaryTree{node: z, left: nil, right: nil}
+      :empty ->
+        %BinaryTree{val: z, left: :empty, right: :empty}
 
-      %BinaryTree{node: n, left: l, right: r} ->
+      %BinaryTree{val: n, left: l, right: r} ->
         cond do
           n == z -> tree
-          z < n -> %BinaryTree{node: n, left: bst_insert(z, l), right: r}
-          z > n -> %BinaryTree{node: n, left: l, right: bst_insert(z, r)}
+          z < n -> %BinaryTree{val: n, left: bst_insert(z, l), right: r}
+          z > n -> %BinaryTree{val: n, left: l, right: bst_insert(z, r)}
         end
     end
   end
@@ -1412,23 +1413,24 @@ defmodule Learning do
   ## Example
   iex> Learning.construct_bst [3, 2, 5, 7, 1]
   %BinaryTree{
-    node: 3,
+    val: 3,
     left: %BinaryTree{
-      node: 2,
-      left: %BinaryTree{node: 1, left: nil, right: nil},
-      right: nil
+      val: 2,
+      left: %BinaryTree{val: 1, left: :empty, right: :empty},
+      right: :empty
     },
     right: %BinaryTree{
-      node: 5,
-      left: nil,
-      right: %BinaryTree{node: 7, left: nil, right: nil}
+      val: 5,
+      left: :empty,
+      right: %BinaryTree{val: 7, left: :empty, right: :empty}
     }
   }
   """
   def construct_bst(xs) when is_list(xs) do
-    List.foldl(xs, nil, &bst_insert/2)
+    List.foldl(xs, :empty, &bst_insert/2)
   end
 
+  @spec sym_bal_btrees(integer()) :: list()
   @doc """
     Construct all symmetrical, balanced binary trees with n nodes
 
@@ -1436,11 +1438,12 @@ defmodule Learning do
   iex> Enum.count(Learning.sym_bal_btrees(57))
   256
   """
-  def sym_bal_btrees(n) do
+  def sym_bal_btrees(n) when is_integer(n) do
     construct_balanced_btrees(n)
     |> Enum.filter(&BinaryTree.is_symmetric/1)
   end
 
+  @spec construct_height_balanced_btrees(integer()) :: list()
   @doc """
     Construct all height-balanced binary trees with height h
 
@@ -1448,19 +1451,27 @@ defmodule Learning do
   iex(63)> Learning.construct_height_balanced_btrees(2) |> Enum.map(&BinaryTree.height/1)
   [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
   """
-  def construct_height_balanced_btrees(h) do
+  def construct_height_balanced_btrees(h) when is_integer(h) do
     cond do
       h == 0 ->
-        [%BinaryTree{node: "x", left: nil, right: nil}]
+        [%BinaryTree{val: "x", left: :empty, right: :empty}]
 
       h == 1 ->
         [
-          %BinaryTree{node: "x", left: %BinaryTree{node: "x", left: nil, right: nil}, right: nil},
-          %BinaryTree{node: "x", left: nil, right: %BinaryTree{node: "x", left: nil, right: nil}},
           %BinaryTree{
-            node: "x",
-            left: %BinaryTree{node: "x", left: nil, right: nil},
-            right: %BinaryTree{node: "x", left: nil, right: nil}
+            val: "x",
+            left: %BinaryTree{val: "x", left: :empty, right: :empty},
+            right: :empty
+          },
+          %BinaryTree{
+            val: "x",
+            left: :empty,
+            right: %BinaryTree{val: "x", left: :empty, right: :empty}
+          },
+          %BinaryTree{
+            val: "x",
+            left: %BinaryTree{val: "x", left: :empty, right: :empty},
+            right: %BinaryTree{val: "x", left: :empty, right: :empty}
           }
         ]
 
@@ -1472,30 +1483,38 @@ defmodule Learning do
     end
   end
 
+  @spec max_nodes(integer()) :: integer()
+  @doc """
+    Returns the maximum number of nodes that can fit into a binary tree with height h
+
+  ## Example
+  iex> Learning.max_nodes(3)
+  15
+  """
+  def max_nodes(h) when is_integer(h) do
+    trunc(:math.pow(2, h + 1)) - 1
+  end
+
+  @spec min_nodes(non_neg_integer()) :: pos_integer()
   @doc """
     Find and return the minimum number of nodes for a height-balanced binary
     tree of the given height
 
   ## Example
   iex(70)> Learning.min_nodes 3
-  5
+  7
   """
-  def min_nodes(0) do
-    # A tree with no children
-    1
-  end
+  def min_nodes(h) when h < 0, do: 0
 
-  def min_nodes(1) do
-    # A tree with one edge is still height-balanced
-    2
-  end
+  def min_nodes(0), do: 1
+
+  def min_nodes(1), do: 2
 
   def min_nodes(h) when is_integer(h) do
-    # the nodes of the left and right children, this is always less than if
-    # both children have height h-1 so that case can be ignored
-    min_nodes(h - 1) + min_nodes(h - 2)
+    min_nodes(h - 1) + min_nodes(h - 2) + 1
   end
 
+  @spec min_height(integer()) :: integer()
   @doc """
     Find and return the minumum height for a height-balanced binary tree with
     the given number of nodes
@@ -1550,6 +1569,113 @@ defmodule Learning do
   4
   """
   def min_height(n) when is_integer(n) do
-    trunc(:math.log2(n))
+    ceil(:math.log2(n + 1)) - 1
+  end
+
+  @spec max_height(integer()) :: integer()
+  @doc """
+    Calculate the max height for a height-balanced binary tree that can be
+    constructed with n nodes
+
+  ## Example
+  iex(2)> Learning.max_height 15
+  5
+  """
+  def max_height(n) when is_integer(n) do
+    max_height_search(0, 0, 1, n)
+  end
+
+  defp max_height_search(h, mh, mh_1, n) when is_integer(h) and is_integer(n) do
+    cond do
+      mh > n -> h - 1
+      true -> max_height_search(h + 1, mh_1, mh + mh_1 + 1, n)
+    end
+  end
+
+  @spec fold_range(integer(), integer(), any(), fun()) :: any()
+  @doc """
+    Perform function f for each n in range n0..n1, assigning the result to acc, returning acc after last operation
+
+  ## Example
+  iex(3)> Learning.fold_range(1, 5, 0, &Kernel.+/2)
+  15
+  iex(4)> Learning.fold_range(3, 5, 0, &Kernel.+/2)
+  12
+  """
+  def fold_range(n0, n1, acc, f) when is_function(f) do
+    if n0 > n1 do
+      acc
+    else
+      fold_range(n0 + 1, n1, f.(n0, acc), f)
+    end
+  end
+
+  @spec add_swap_left_right([BinaryTree.tree(), ...]) :: [BinaryTree.tree(), ...]
+  @doc """
+    A balanced tree can swap its left and right children to create a new, balanced tree.
+    This function returns all the trees in trees together with their permutations.
+  """
+  def add_swap_left_right(trees) do
+    List.foldl(trees, trees, fn n, a ->
+      case n do
+        %BinaryTree{val: _, left: :empty, right: :empty} ->
+          a
+
+        %BinaryTree{val: v, left: l, right: r} ->
+          [%BinaryTree{val: v, left: r, right: l} | a]
+
+        :empty ->
+          a
+      end
+    end)
+  end
+
+  @spec construct_hbal_btrees_nodes(non_neg_integer()) :: [BinaryTree.tree(), ...]
+  @doc """
+    Construct all possible height-balanced btrees with n nodes
+
+  ## Example
+  iex> Learning.construct_hbal_btrees_nodes(15) |> Enum.all?(fn t -> BinaryTree.count(t) == 15 end)
+  true
+
+  iex> Learning.construct_hbal_btrees_nodes(15) |> Enum.count()
+  1553
+  """
+  def construct_hbal_btrees_nodes(n) when is_integer(n) do
+    fold_range(min_height(n), max_height(n), [], fn h, l ->
+      l ++ Enum.reverse(construct_hbal_btrees_nodes_height(h, n))
+    end)
+  end
+
+  defp add_hbal_tree_node(l, h1, h2, n) do
+    min_n1 = max(min_nodes(h1), n - 1 - max_nodes(h2))
+    max_n1 = min(max_nodes(h1), n - 1 - min_nodes(h2))
+
+    fold_range(min_n1, max_n1, l, fn n1, l ->
+      t1 =
+        construct_height_balanced_btrees(h1) |> Enum.filter(fn t -> BinaryTree.count(t) == n1 end)
+
+      t2 =
+        construct_height_balanced_btrees(h2)
+        |> Enum.filter(fn t -> BinaryTree.count(t) == n - 1 - n1 end)
+
+      List.foldl(t1, l, fn t1, l ->
+        List.foldl(t2, l, fn t2, l -> [%BinaryTree{val: "x", left: t1, right: t2} | l] end)
+      end)
+    end)
+  end
+
+  defp construct_hbal_btrees_nodes_height(h, n) when is_integer(n) do
+    cond do
+      h == 0 && n == 0 ->
+        [:empty]
+
+      h == 0 && n == 1 ->
+        [%BinaryTree{val: "x", left: :empty, right: :empty}]
+
+      true ->
+        acc = add_hbal_tree_node([], h - 1, h - 2, n) |> add_swap_left_right()
+        add_hbal_tree_node(acc, h - 1, h - 1, n)
+    end
   end
 end
