@@ -1645,7 +1645,7 @@ defmodule Learning do
     # There is a minimum and maximum height tree that can be made with n nodes, find the bounds
     # generate all trees in the bounds
     fold_range(min_height(n), max_height(n), [], fn h, l ->
-      l ++ Enum.reverse(construct_hbal_btrees_nodes_height(h, n))
+      l ++ construct_hbal_btrees_nodes_height(h, n)
     end)
   end
 
