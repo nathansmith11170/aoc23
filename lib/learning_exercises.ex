@@ -1642,16 +1642,21 @@ defmodule Learning do
   1553
   """
   def construct_hbal_btrees_nodes(n) when is_integer(n) do
+    # There is a minimum and maximum height tree that can be made with n nodes, find the bounds
+    # generate all trees in the bounds
     fold_range(min_height(n), max_height(n), [], fn h, l ->
       l ++ Enum.reverse(construct_hbal_btrees_nodes_height(h, n))
     end)
   end
 
   defp add_hbal_tree_node(l, h1, h2, n) do
+    # the child trees have bounds on their number of nodes based on their height
     min_n1 = max(min_nodes(h1), n - 1 - max_nodes(h2))
     max_n1 = min(max_nodes(h1), n - 1 - min_nodes(h2))
 
     fold_range(min_n1, max_n1, l, fn n1, l ->
+      # if one child uses n1 nodes, the other child must use n - 1 - n1
+      # which is those remaining after subtracting the other child and the parent
       t1 =
         construct_height_balanced_btrees(h1) |> Enum.filter(fn t -> BinaryTree.count(t) == n1 end)
 
@@ -1659,6 +1664,7 @@ defmodule Learning do
         construct_height_balanced_btrees(h2)
         |> Enum.filter(fn t -> BinaryTree.count(t) == n - 1 - n1 end)
 
+      # permutations of each
       List.foldl(t1, l, fn t1, l ->
         List.foldl(t2, l, fn t2, l -> [%BinaryTree{val: "x", left: t1, right: t2} | l] end)
       end)
@@ -1666,7 +1672,10 @@ defmodule Learning do
   end
 
   defp construct_hbal_btrees_nodes_height(h, n) when is_integer(n) do
+    # First we consider the case where one child is 1 shorter than the other
     acc = add_hbal_tree_node([], h - 1, h - 2, n) |> add_swap_left_right()
+
+    # then add cases where children are of equal height
     add_hbal_tree_node(acc, h - 1, h - 1, n)
   end
 end
