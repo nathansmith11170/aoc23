@@ -1666,16 +1666,7 @@ defmodule Learning do
   end
 
   defp construct_hbal_btrees_nodes_height(h, n) when is_integer(n) do
-    cond do
-      h == 0 && n == 0 ->
-        [:empty]
-
-      h == 0 && n == 1 ->
-        [%BinaryTree{val: "x", left: :empty, right: :empty}]
-
-      true ->
-        acc = add_hbal_tree_node([], h - 1, h - 2, n) |> add_swap_left_right()
-        add_hbal_tree_node(acc, h - 1, h - 1, n)
-    end
+    acc = add_hbal_tree_node([], h - 1, h - 2, n) |> add_swap_left_right()
+    add_hbal_tree_node(acc, h - 1, h - 1, n)
   end
 end
