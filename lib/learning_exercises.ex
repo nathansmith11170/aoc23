@@ -1610,26 +1610,6 @@ defmodule Learning do
     end
   end
 
-  @spec add_swap_left_right([BinaryTree.tree(), ...]) :: [BinaryTree.tree(), ...]
-  @doc """
-    A balanced tree can swap its left and right children to create a new, balanced tree.
-    This function returns all the trees in trees together with their permutations.
-  """
-  def add_swap_left_right(trees) do
-    List.foldl(trees, trees, fn n, a ->
-      case n do
-        %BinaryTree{val: _, left: :empty, right: :empty} ->
-          a
-
-        %BinaryTree{val: v, left: l, right: r} ->
-          [%BinaryTree{val: v, left: r, right: l} | a]
-
-        :empty ->
-          a
-      end
-    end)
-  end
-
   @spec construct_hbal_btrees_nodes(non_neg_integer()) :: [BinaryTree.tree(), ...]
   @doc """
     Construct all possible height-balanced btrees with n nodes
@@ -1645,7 +1625,13 @@ defmodule Learning do
     # There is a minimum and maximum height tree that can be made with n nodes, find the bounds
     # generate all trees in the bounds
     fold_range(min_height(n), max_height(n), [], fn h, l ->
-      l ++ construct_hbal_btrees_nodes_height(h, n)
+      # First we consider the case where one child is 1 shorter than the other child
+      ([]
+       |> add_hbal_tree_node(h - 1, h - 2, n)
+       # Any balanced tree can swap its left and right children
+       |> add_swap_left_right
+       # then add cases where left and right children are of equal height and accumulate
+       |> add_hbal_tree_node(h - 1, h - 1, n)) ++ l
     end)
   end
 
@@ -1671,13 +1657,18 @@ defmodule Learning do
     end)
   end
 
-  defp construct_hbal_btrees_nodes_height(h, n) when is_integer(n) do
-    []
-    # First we consider the case where one child is 1 shorter than the other child
-    |> add_hbal_tree_node(h - 1, h - 2, n)
-    # Any balanced tree can swap its left and right children
-    |> add_swap_left_right()
-    # then add cases where left and right children are of equal height
-    |> add_hbal_tree_node(h - 1, h - 1, n)
+  defp add_swap_left_right(trees) do
+    List.foldl(trees, trees, fn n, a ->
+      case n do
+        %BinaryTree{val: _, left: :empty, right: :empty} ->
+          a
+
+        %BinaryTree{val: v, left: l, right: r} ->
+          [%BinaryTree{val: v, left: r, right: l} | a]
+
+        :empty ->
+          a
+      end
+    end)
   end
 end
