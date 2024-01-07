@@ -131,4 +131,49 @@ defmodule BinaryTree do
       %BinaryTree{val: _, left: l, right: r} -> 1 + max(height(l), height(r))
     end
   end
+
+  @spec internal_nodes(tree()) :: [any()]
+  @doc """
+    Return the nodes of a tree in a list
+
+  ## Examples
+  iex> BinaryTree.internal_nodes %BinaryTree{val: "1", left: :empty, right: %BinaryTree{val: "2", left: %BinaryTree{val: "3", left: :empty, right: :empty}, right: :empty}}
+  ["1", "2"]
+
+  iex> example_tree = %BinaryTree{val: 'a', left: %BinaryTree{val: 'b', left: %BinaryTree{val: 'd', left: :empty, right: :empty}, right: %BinaryTree{val: 'e', left: :empty, right: :empty}}, right: %BinaryTree{val: 'c', left: :empty, right: %BinaryTree{val: 'f', left: %BinaryTree{val: 'g', left: :empty, right: :empty}, right: :empty}}}
+  iex> BinaryTree.internal_nodes example_tree
+  ['a', 'b', 'c', 'f']
+  """
+  def internal_nodes(:empty), do: []
+
+  def internal_nodes(tree) do
+    case tree do
+      %BinaryTree{val: _, left: :empty, right: :empty} ->
+        []
+
+      %BinaryTree{val: _, left: l, right: r} ->
+        [tree.val] ++ internal_nodes(l) ++ internal_nodes(r)
+    end
+  end
+
+  @doc """
+    Counts the nodes at a given level of a binary tree.big
+
+  ## Examples
+  iex> example_tree = %BinaryTree{val: 'a', left: %BinaryTree{val: 'b', left: %BinaryTree{val: 'd', left: :empty, right: :empty}, right: %BinaryTree{val: 'e', left: :empty, right: :empty}}, right: %BinaryTree{val: 'c', left: :empty, right: %BinaryTree{val: 'f', left: %BinaryTree{val: 'g', left: :empty, right: :empty}, right: :empty}}}
+  iex> BinaryTree.at_level example_tree, 2
+  ['b', 'c']
+  """
+  def at_level(tree, level) when is_integer(level) do
+    count_trees_at_0([tree], level - 1)
+  end
+
+  defp count_trees_at_0(trees, n) do
+    if n > 0 do
+      next_level = for(t <- trees, t != :empty, do: [t.left, t.right]) |> List.flatten()
+      count_trees_at_0(next_level, n - 1)
+    else
+      for t <- trees, t != :empty, do: t.val
+    end
+  end
 end
