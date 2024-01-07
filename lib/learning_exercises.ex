@@ -1672,10 +1672,12 @@ defmodule Learning do
   end
 
   defp construct_hbal_btrees_nodes_height(h, n) when is_integer(n) do
-    # First we consider the case where one child is 1 shorter than the other
-    acc = add_hbal_tree_node([], h - 1, h - 2, n) |> add_swap_left_right()
-
-    # then add cases where children are of equal height
-    add_hbal_tree_node(acc, h - 1, h - 1, n)
+    []
+    # First we consider the case where one child is 1 shorter than the other child
+    |> add_hbal_tree_node(h - 1, h - 2, n)
+    # Any balanced tree can swap its left and right children
+    |> add_swap_left_right()
+    # then add cases where left and right children are of equal height
+    |> add_hbal_tree_node(h - 1, h - 1, n)
   end
 end
