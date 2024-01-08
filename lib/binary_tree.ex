@@ -176,4 +176,63 @@ defmodule BinaryTree do
       for t <- trees, t != :empty, do: t.val
     end
   end
+
+  @spec complete?(tree()) :: boolean()
+  @doc """
+    checks if the given binary tree is complete
+
+  ## Example
+  iex(3)> BinaryTree.complete? %BinaryTree{val: 5, left: :empty, right: :empty}
+  true
+  iex(4)> BinaryTree.complete? %BinaryTree{val: 5, left: :empty, right: %BinaryTree{val: 3, left: :empty, right: :empty}}
+  false
+  iex(5)> BinaryTree.complete? %BinaryTree{val: 5, left: %BinaryTree{val: 4, left: :empty, right: :empty}, right: %BinaryTree{val: 3, left: :empty, right: :empty}}
+  true
+  """
+  def complete?(:empty), do: true
+
+  def complete?(tree) do
+    values = level_order_traverse(tree)
+    first_nil = Enum.find_index(values, fn v -> v == nil end)
+    {left, right} = Enum.split(values, first_nil)
+    # A complete tree has all nils at the end, and none before
+    not Enum.any?(left, fn v -> v == nil end) && Enum.all?(right, fn v -> v == nil end)
+  end
+
+  @spec level_order_traverse(tree()) :: []
+  @doc """
+    Breadth-first search, returning a possibly sparse list of values in the binary tree.
+
+  ## Example
+  iex(3)> BinaryTree.level_order_traverse %BinaryTree{val: 5, left: :empty, right: :empty}
+  [5, nil, nil]
+  iex(4)> BinaryTree.level_order_traverse %BinaryTree{val: 5, left: :empty, right: %BinaryTree{val: 3, left: :empty, right: :empty}}
+  [5, nil, 3, nil, nil]
+  iex(5)> BinaryTree.level_order_traverse %BinaryTree{val: 5, left: %BinaryTree{val: 4, left: :empty, right: :empty}, right: %BinaryTree{val: 3, left: :empty, right: :empty}}
+  [5, 4, 3, nil, nil, nil, nil]
+  """
+  def level_order_traverse(:empty), do: []
+
+  def level_order_traverse(tree = %BinaryTree{}) do
+    level_order_traverse_q(:queue.in(tree, :queue.new()), [])
+  end
+
+  defp level_order_traverse_q(q1, acc) do
+    v = :queue.out(q1)
+
+    case v do
+      {:empty, _} ->
+        acc
+
+      {{:value, t}, q2} ->
+        case t do
+          :empty ->
+            level_order_traverse_q(q2, acc ++ [nil])
+
+          %BinaryTree{val: v, left: l, right: r} ->
+            q3 = :queue.in(l, q2)
+            level_order_traverse_q(:queue.in(r, q3), acc ++ [v])
+        end
+    end
+  end
 end
