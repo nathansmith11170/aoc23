@@ -235,4 +235,61 @@ defmodule BinaryTree do
         end
     end
   end
+
+  @spec construct_complete_tree(nonempty_list()) :: tree()
+  @doc """
+    Constructs a complete tree from an array of values
+
+  ## Example
+  iex(20)> BinaryTree.construct_complete_tree [1, 2, 3, 4, 5, 6]
+  %BinaryTree{
+    val: 1,
+    left: %BinaryTree{
+      val: 2,
+      left: %BinaryTree{val: 4, left: :empty, right: :empty},
+      right: %BinaryTree{val: 5, left: :empty, right: :empty}
+    },
+    right: %BinaryTree{
+      val: 3,
+      left: %BinaryTree{val: 6, left: :empty, right: :empty},
+      right: :empty
+    }
+  }
+  """
+  def construct_complete_tree(xs) do
+    [h | _] = xs
+
+    %BinaryTree{
+      val: h,
+      left: construct_complete_tree_address(2, xs),
+      right: construct_complete_tree_address(3, xs)
+    }
+  end
+
+  defp construct_complete_tree_address(address, xs) do
+    left_i = 2 * address
+    right_i = 2 * address + 1
+
+    cond do
+      address - 1 > Enum.count(xs) - 1 ->
+        :empty
+
+      left_i - 1 > Enum.count(xs) - 1 ->
+        %BinaryTree{val: Enum.at(xs, address - 1), left: :empty, right: :empty}
+
+      right_i - 1 > Enum.count(xs) - 1 ->
+        %BinaryTree{
+          val: Enum.at(xs, address - 1),
+          left: construct_complete_tree_address(left_i, xs),
+          right: :empty
+        }
+
+      true ->
+        %BinaryTree{
+          val: Enum.at(xs, address - 1),
+          left: construct_complete_tree_address(left_i, xs),
+          right: construct_complete_tree_address(right_i, xs)
+        }
+    end
+  end
 end
