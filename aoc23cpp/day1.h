@@ -45,6 +45,13 @@ class machine {
     throw std::runtime_error("Error: state not found in failure map.");
   }
 
+  int fail_prime(int state) {
+    if (state == 1)
+      return 0;
+    else
+      return failure_func(state);
+  }
+
   int goto_func(int state, char symbol) {
     for (auto &e : goto_map) {
       if (e.source == state && e.label == symbol) {
@@ -113,7 +120,7 @@ public:
           }
 
           fail_map.push_back({s, goto_func(state, a)});
-          int fs = failure_func(s);
+          int fs {failure_func(s)};
           auto out_fs = output(fs);
           if (output(s).empty()) {
             output_map.push_back({fs, out_fs});
@@ -132,12 +139,12 @@ public:
     int state {0};
     for (std::size_t i {0}; i < input.length(); ++i) {
       while (goto_func(state, input.at(i)) == FAIL) {
-        state = failure_func(state);
+        state = fail_prime(state);
       }
 
       state = goto_func(state, input.at(i));
 
-      auto out = output(state);
+      auto out {output(state)};
       if (!out.empty()) {
         for (auto &keyword : out) {
           matches.push_back({i, keyword});
