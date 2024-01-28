@@ -20,13 +20,12 @@ int main() {
     result_one += part_one(line);
     result_two += part_two(line, string_matcher);
   }
+  const std::chrono::duration<double> diff = std::chrono::steady_clock::now() - start;
+  std::cout << "Time spent calculating: " << diff.count() << "s\n";
 
   std::cout << "The result of part one is: " << result_one << '\n';
   std::cout << "The result of part two is: " << result_two << '\n';
 
-  const std::chrono::duration<double> diff = std::chrono::steady_clock::now() - start;
-  std::cout << "Time spent in main: " << std::chrono::duration_cast<std::chrono::microseconds>(diff).count()
-            << "\u03BCs\n";
   return 0;
 }
 

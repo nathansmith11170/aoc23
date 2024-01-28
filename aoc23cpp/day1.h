@@ -130,7 +130,7 @@ public:
   std::vector<std::tuple<std::size_t, std::string>> pattern_matching_machine(std::string input) {
     std::vector<std::tuple<std::size_t, std::string>> matches {};
     int state {0};
-    for (int i {0}; i < input.length(); ++i) {
+    for (std::size_t i {0}; i < input.length(); ++i) {
       while (goto_func(state, input.at(i)) == FAIL) {
         state = failure_func(state);
       }
@@ -148,4 +148,4 @@ public:
   }
 };
 
-int part_two(std::string line, machine *m);
+int part_two(std::string line, machine *matcher);
