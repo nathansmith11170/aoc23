@@ -6,7 +6,6 @@
 
 int main() {
   auto start {std::chrono::steady_clock::now()};
-
   vector<string> dictionary {"1",   "2",   "3",     "4",    "5",    "6",   "7",     "8",     "9",
                              "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
   auto string_matcher = new machine();

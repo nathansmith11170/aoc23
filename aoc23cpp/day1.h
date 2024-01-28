@@ -1,3 +1,4 @@
+#include <map>
 #include <queue>
 #include <set>
 #include <stdexcept>
@@ -31,7 +32,7 @@ class machine {
   vector<edge> goto_map;
   vector<tuple<int, int>> fail_map;
   vector<tuple<int, vector<string>>> output_map;
-  vector<edge> next_move_map;
+  std::map<int, vector<edge>> next_move_map;
 
   vector<string> output(int state) {
     for (auto &p : output_map) {
@@ -68,15 +69,23 @@ class machine {
   }
 
   int next_move(int state, char symbol) {
-    for (auto &e : next_move_map) {
-      if (e.source == state && e.label == symbol) {
-        return e.destination;
+    if (next_move_map.count(state) == 1) {
+      for (auto &e : next_move_map.at(state)) {
+        if (e.label == symbol) {
+          return e.destination;
+        }
       }
-    }
-    return FAIL;
+    } else
+      return FAIL;
   }
 
 public:
+  machine() : goto_map(), fail_map(), output_map(), next_move_map() {
+    goto_map.reserve(64);
+    fail_map.reserve(64);
+    output_map.reserve(64);
+  }
+
   void initialize_state(vector<string> dictionary) {
     int newstate {0};
     auto enter = [&newstate, this](string keyword) {
@@ -153,7 +162,11 @@ public:
     std::queue<int> q {};
     for (auto &a : alphabet) {
       int g {goto_func(0, a)};
-      next_move_map.push_back({0, g, a});
+      if (next_move_map.count(0) == 1) {
+        next_move_map.at(0).push_back({0, g, a});
+      } else {
+        next_move_map.insert_or_assign(0, vector<edge> {{0, g, a}});
+      }
       if (g != 0) {
         q.push(g);
       }
@@ -166,9 +179,17 @@ public:
         int s = goto_func(r, a);
         if (s != FAIL) {
           q.push(s);
-          next_move_map.push_back({r, s, a});
+          if (next_move_map.count(r) == 1) {
+            next_move_map.at(r).push_back({r, s, a});
+          } else {
+            next_move_map.insert_or_assign(r, vector<edge> {{r, s, a}});
+          }
         } else {
-          next_move_map.push_back({r, next_move(failure_func(r), a), a});
+          if (next_move_map.count(r) == 1) {
+            next_move_map.at(r).push_back({r, next_move(failure_func(r), a), a});
+          } else {
+            next_move_map.insert_or_assign(r, vector<edge> {{r, next_move(failure_func(r), a), a}});
+          }
         }
       }
     }
