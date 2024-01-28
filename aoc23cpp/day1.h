@@ -69,14 +69,14 @@ class machine {
   }
 
   int next_move(int state, char symbol) {
-    if (next_move_map.count(state) == 1) {
-      for (auto &e : next_move_map.at(state)) {
-        if (e.label == symbol) {
-          return e.destination;
-        }
-      }
-    } else
+    if (next_move_map.count(state) != 1)
       return FAIL;
+    for (auto &e : next_move_map.at(state)) {
+      if (e.label == symbol) {
+        return e.destination;
+      }
+    }
+    throw; // unreachable
   }
 
 public:
