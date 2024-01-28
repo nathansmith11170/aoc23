@@ -18,6 +18,8 @@ struct edge {
   char label;
 };
 
+// source: Aho, Alfred V.; Corasick, Margaret J. (June 1975). "Efficient string matching: An aid to bibliographic
+// search". Communications of the ACM. 18 (6): 333–340. doi:10.1145/360825.360855. MR 0371172. S2CID 207735784.
 class machine {
   std::set<char> alphabet {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
                            's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
