@@ -31,6 +31,7 @@ class machine {
   vector<edge> goto_map;
   vector<tuple<int, int>> fail_map;
   vector<tuple<int, vector<string>>> output_map;
+  vector<edge> next_move_map;
 
   vector<string> output(int state) {
     for (auto &p : output_map) {
@@ -59,6 +60,15 @@ class machine {
 
   int goto_func(int state, char symbol) {
     for (auto &e : goto_map) {
+      if (e.source == state && e.label == symbol) {
+        return e.destination;
+      }
+    }
+    return FAIL;
+  }
+
+  int next_move(int state, char symbol) {
+    for (auto &e : next_move_map) {
       if (e.source == state && e.label == symbol) {
         return e.destination;
       }
@@ -139,15 +149,36 @@ public:
     }
   }
 
+  void initialize_next_move() {
+    std::queue<int> q {};
+    for (auto &a : alphabet) {
+      int g {goto_func(0, a)};
+      next_move_map.push_back({0, g, a});
+      if (g != 0) {
+        q.push(g);
+      }
+    }
+
+    while (!q.empty()) {
+      int r {q.front()};
+      q.pop();
+      for (auto &a : alphabet) {
+        int s = goto_func(r, a);
+        if (s != FAIL) {
+          q.push(s);
+          next_move_map.push_back({r, s, a});
+        } else {
+          next_move_map.push_back({r, next_move(failure_func(r), a), a});
+        }
+      }
+    }
+  }
+
   vector<tuple<size_t, string>> pattern_matching_machine(string input) {
     vector<tuple<size_t, string>> matches {};
     int state {0};
     for (size_t i {0}; i < input.length(); ++i) {
-      while (goto_func(state, input.at(i)) == FAIL) {
-        state = fail_prime(state);
-      }
-
-      state = goto_func(state, input.at(i));
+      state = next_move(state, input.at(i));
 
       auto out {output(state)};
       if (!out.empty()) {

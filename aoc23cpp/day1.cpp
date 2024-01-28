@@ -12,6 +12,7 @@ int main() {
   auto string_matcher = new machine();
   string_matcher->initialize_state(dictionary);
   string_matcher->initialize_failure();
+  string_matcher->initialize_next_move();
 
   string line {};
   int result_one {0};
