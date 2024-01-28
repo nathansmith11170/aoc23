@@ -5,12 +5,17 @@
 #include <tuple>
 #include <vector>
 
+using std::size_t;
+using std::string;
+using std::tuple;
+using std::vector;
+
 constexpr int FAIL = -1;
 
-int part_one(std::string line);
-int last_digit(std::string line);
-int first_digit(std::string line);
-std::string word_to_digit(std::string word);
+int part_one(string line);
+int last_digit(string line);
+int first_digit(string line);
+string word_to_digit(string word);
 
 struct edge {
   int source;
@@ -23,17 +28,17 @@ struct edge {
 class machine {
   std::set<char> alphabet {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
                            's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-  std::vector<edge> goto_map;
-  std::vector<std::tuple<int, int>> fail_map;
-  std::vector<std::tuple<int, std::vector<std::string>>> output_map;
+  vector<edge> goto_map;
+  vector<tuple<int, int>> fail_map;
+  vector<tuple<int, vector<string>>> output_map;
 
-  std::vector<std::string> output(int state) {
+  vector<string> output(int state) {
     for (auto &p : output_map) {
       if (std::get<0>(p) == state) {
         return std::get<1>(p);
       }
     }
-    return std::vector<std::string> {};
+    return vector<string> {};
   }
 
   int failure_func(int state) {
@@ -62,11 +67,11 @@ class machine {
   }
 
 public:
-  void initialize_state(std::vector<std::string> dictionary) {
+  void initialize_state(vector<string> dictionary) {
     int newstate {0};
-    auto enter = [&newstate, this](std::string keyword) {
+    auto enter = [&newstate, this](string keyword) {
       int state {0};
-      std::size_t j {0};
+      size_t j {0};
       while (goto_func(state, keyword.at(j)) != FAIL) {
         state = goto_func(state, keyword.at(j));
         ++j;
@@ -78,7 +83,7 @@ public:
       }
 
       if (output(state).empty()) {
-        output_map.push_back({state, std::vector<std::string> {keyword}});
+        output_map.push_back({state, vector<string> {keyword}});
       } else {
         output(state).push_back(keyword);
       }
@@ -134,10 +139,10 @@ public:
     }
   }
 
-  std::vector<std::tuple<std::size_t, std::string>> pattern_matching_machine(std::string input) {
-    std::vector<std::tuple<std::size_t, std::string>> matches {};
+  vector<tuple<size_t, string>> pattern_matching_machine(string input) {
+    vector<tuple<size_t, string>> matches {};
     int state {0};
-    for (std::size_t i {0}; i < input.length(); ++i) {
+    for (size_t i {0}; i < input.length(); ++i) {
       while (goto_func(state, input.at(i)) == FAIL) {
         state = fail_prime(state);
       }
@@ -155,4 +160,4 @@ public:
   }
 };
 
-int part_two(std::string line, machine *matcher);
+int part_two(string line, machine *matcher);

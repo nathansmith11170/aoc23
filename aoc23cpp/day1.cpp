@@ -7,13 +7,13 @@
 int main() {
   auto start {std::chrono::steady_clock::now()};
 
-  std::vector<std::string> dictionary {"1",   "2",   "3",     "4",    "5",    "6",   "7",     "8",     "9",
-                                       "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
+  vector<string> dictionary {"1",   "2",   "3",     "4",    "5",    "6",   "7",     "8",     "9",
+                             "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
   auto string_matcher = new machine();
   string_matcher->initialize_state(dictionary);
   string_matcher->initialize_failure();
 
-  std::string line {};
+  string line {};
   int result_one {0};
   int result_two {0};
   while (getline(std::cin, line)) {
@@ -39,27 +39,27 @@ template <typename T> auto end(reversion_wrapper<T> w) { return std::rend(w.iter
 
 template <typename T> reversion_wrapper<T> reverse(T &&iterable) { return {iterable}; }
 
-int last_digit(std::string line) {
+int last_digit(string line) {
   for (auto &c : reverse(line)) {
     if (isdigit(c)) {
-      return std::stoi(std::string(1, c));
+      return std::stoi(string(1, c));
     }
   }
   return 0;
 }
 
-int first_digit(std::string line) {
+int first_digit(string line) {
   for (auto &c : line) {
     if (isdigit(c)) {
-      return stoi(std::string(1, c));
+      return stoi(string(1, c));
     }
   }
   return 0;
 }
 
-int part_one(std::string line) { return 10 * first_digit(line) + last_digit(line); }
+int part_one(string line) { return 10 * first_digit(line) + last_digit(line); }
 
-std::string word_to_digit(std::string word) {
+string word_to_digit(string word) {
   if (word == "one")
     return "1";
   if (word == "two")
@@ -81,14 +81,14 @@ std::string word_to_digit(std::string word) {
   return word;
 }
 
-int part_two(std::string line, machine *matcher) {
+int part_two(string line, machine *matcher) {
   auto matches = matcher->pattern_matching_machine(line);
-  std::size_t min {999};
-  std::size_t max {0};
-  std::string first {};
-  std::string last {};
+  size_t min {999};
+  size_t max {0};
+  string first {};
+  string last {};
   for (auto &m : matches) {
-    std::size_t start_index {std::get<0>(m)};
+    size_t start_index {std::get<0>(m)};
     if (start_index <= min) {
       min = start_index;
       first = std::get<1>(m);
@@ -98,6 +98,6 @@ int part_two(std::string line, machine *matcher) {
       last = std::get<1>(m);
     }
   }
-  std::string number {word_to_digit(first) + word_to_digit(last)};
+  string number {word_to_digit(first) + word_to_digit(last)};
   return std::stoi(number);
 }
